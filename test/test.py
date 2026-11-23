@@ -1,40 +1,59 @@
 # SPDX-FileCopyrightText: © 2024 Tiny Tapeout
 # SPDX-License-Identifier: Apache-2.0
 
+
 import cocotb
-from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles
+from cocotb.triggers import Timer
+
+
+def reference(a, b, sel):
+    if sel == 0:
+        value = a + b
+        r, carry = value & 15, (value >> 4) & 1
+    elif sel == 1:
+        value = (a - b) & 31
+        r, carry = value & 15, (value >> 4) & 1
+    elif sel == 2:
+        r, carry = a & b, 0
+    elif sel == 3:
+        r, carry = a | b, 0
+    elif sel == 4:
+        r, carry = a ^ b, 0
+    elif sel == 5:
+        r, carry = (~a) & 15, 0
+    elif sel == 6:
+        r, carry = int(a == b), 0
+    else:
+        r, carry = int(a < b), 0
+
+    zero = int(r == 0)
+    return r | (carry << 4) | (zero << 5)
 
 
 @cocotb.test()
-async def test_project(dut):
-    dut._log.info("Start")
+async def test_all_inputs(dut):
 
-    # Set the clock period to 10 us (100 KHz)
-    clock = Clock(dut.clk, 10, unit="us")
-    cocotb.start_soon(clock.start())
-
-    # Reset
-    dut._log.info("Reset")
     dut.ena.value = 1
-    dut.ui_in.value = 0
-    dut.uio_in.value = 0
-    dut.rst_n.value = 0
-    await ClockCycles(dut.clk, 10)
+    dut.clk.value = 0
     dut.rst_n.value = 1
 
-    dut._log.info("Test project behavior")
+    for sel in range(8):
+        for a in range(16):
+            for b in range(16):
 
-    # Set the input values you want to test
-    dut.ui_in.value = 20
-    dut.uio_in.value = 30
+                dut.ui_in.value = (b << 4) | a
+                dut.uio_in.value = sel
 
-    # Wait for one clock cycle to see the output values
-    await ClockCycles(dut.clk, 1)
+                await Timer(10, unit="ns")
 
-    # The following assersion is just an example of how to check the output values.
-    # Change it to match the actual expected output of your module:
-    assert dut.uo_out.value == 50
+                actual = int(dut.uo_out.value)
+                expected = reference(a, b, sel)
 
-    # Keep testing the module by changing the input values, waiting for
-    # one or more clock cycles, and asserting the expected output values.
+                assert actual == expected, (
+                    f"SEL={sel}, A={a}, B={b}: "
+                    f"actual={actual}, esperado={expected}"
+                )
+
+                assert int(dut.uio_oe.value) == 0
+                assert int(dut.uio_out.value) == 0
+
