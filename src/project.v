@@ -20,7 +20,7 @@ module tt_um_ALU (
 
     wire [3:0] A   = ui_in[3:0];
     wire [3:0] B   = ui_in[7:4];
-    wire [2:0] SEL = uio_in[2:0];
+    wire [3:0] SEL = uio_in[2:0];
 
     reg [3:0] R;
     reg Carry;
@@ -46,16 +46,20 @@ module tt_um_ALU (
                 Carry = temp[4];
             end
 
-            3'b010: R = A & B;
-            3'b011: R = A | B;
-            3'b100: R = A ^ B;
-            3'b101: R = ~A;
+            3'b0010: R = A & B;
+            3'b0011: R = A | B;
+            3'b0100: R = A ^ B;
+            3'b0101: R = ~A;
+            3'b0110: R = ~(A & B);
+            3'b0111: R = ~(A | B);
 
-            3'b110:
+            3'b1000:
                 R = (A == B) ? 4'b0001 : 4'b0000;
 
-            3'b111:
+            3'b1001:
                 R = (A < B) ? 4'b0001 : 4'b0000;
+            3'b1010;
+                R = (A > B) ? 4'b0001 : 4'b0000;
 
             default: R = 4'b0000;
         endcase
