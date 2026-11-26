@@ -20,7 +20,7 @@ module tt_um_ALU (
 
     wire [3:0] A   = ui_in[3:0];
     wire [3:0] B   = ui_in[7:4];
-    wire [2:0] SEL = uio_in[2:0];
+    wire [3:0] SEL = uio_in[2:0];
 
     reg [3:0] R;
     reg Carry;
