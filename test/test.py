@@ -23,9 +23,10 @@ def reference(a, b, sel):
         r, carry = (~a) & 15, 0
     elif sel == 6:
         r, carry = int(a == b), 0
-    else:
+    elif sel == 7:
         r, carry = int(a < b), 0
-
+    elif sel == 8:
+        r, carry = int (a * b), 0
     zero = int(r == 0)
     return r | (carry << 4) | (zero << 5)
 
