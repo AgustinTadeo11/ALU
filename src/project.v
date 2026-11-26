@@ -71,7 +71,6 @@ module tt_um_ALU (
         Carry = 1'b1;
        end
     end
-    end
             default: R = 4'b0000;
         endcase
     end
