@@ -59,8 +59,8 @@ module tt_um_ALU (
             4'b1000: begin
                 temp  = {1'b0, A} * {1'b0, B};
                 R     = temp[3:0];
-                Carry = temp[4];
-
+                Carry = temp[7:4];
+            end
             default: R = 4'b0000;
         endcase
     end
