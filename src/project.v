@@ -24,14 +24,14 @@ module tt_um_ALU (
 
     reg [3:0] R;
     reg Carry;
-    reg [4:0] temp;
+    reg [7:0] temp;
 
     wire Zero = (R == 4'b0000);
 
     always @(*) begin
         R     = 4'b0000;
         Carry = 1'b0;
-        temp  = 5'b00000;
+        temp  = 8'b00000000;
 
         case (SEL)
             4'b0000: begin
@@ -59,7 +59,7 @@ module tt_um_ALU (
             4'b1000: begin
                 temp  = {1'b0, A} * {1'b0, B};
                 R     = temp[3:0];
-                Carry = temp[7:4];
+                Carry = |temp[7:4];
             end
             4'b1001: begin
            if (B != 4'b0000) begin
