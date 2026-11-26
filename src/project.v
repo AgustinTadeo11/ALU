@@ -34,29 +34,32 @@ module tt_um_ALU (
         temp  = 5'b00000;
 
         case (SEL)
-            3'b000: begin
+            4'b0000: begin
                 temp  = {1'b0, A} + {1'b0, B};
                 R     = temp[3:0];
                 Carry = temp[4];
             end
 
-            3'b001: begin
+            4'b0001: begin
                 temp  = {1'b0, A} - {1'b0, B};
                 R     = temp[3:0];
                 Carry = temp[4];
             end
 
-            3'b010: R = A & B;
-            3'b011: R = A | B;
-            3'b100: R = A ^ B;
-            3'b101: R = ~A;
+            4'b0010: R = A & B;
+            4'b0011: R = A | B;
+            4'b0100: R = A ^ B;
+            4'b0101: R = ~A;
          
-            3'b110:
+            4'b0110:
                 R = (A == B) ? 4'b0001 : 4'b0000;
 
-            3'b111:
+            4'b0111:
                 R = (A < B) ? 4'b0001 : 4'b0000;
-          
+            4'b1000: begin
+                temp  = {1'b0, A} * {1'b0, B};
+                R     = temp[3:0];
+                Carry = temp[4];
 
             default: R = 4'b0000;
         endcase
